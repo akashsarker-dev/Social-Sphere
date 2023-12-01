@@ -1,59 +1,33 @@
-import React from "react";
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Menu,
-  MenuItem,
-  Avatar,
-  Grid,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import HomeIcon from "@mui/icons-material/Home";
-import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
-import PeopleIcon from "@mui/icons-material/People";
-import Profile from "../profile/Profile";
+import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Unstable_Grid2';
+import Side from '../../components/sidebar/Sidebar';
 
-const Homelayout = () => {
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
 
+export default function Homelayout() {
   return (
-    <AppBar position="static">
-      <Toolbar>
-        {/* Grid container for layout */}
-        <Grid container alignItems="center" justifyContent="space-between">
-          {/* Navigation Icons */}
-          <Grid item xs={3}>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-            >
-              <MenuIcon />
-            </IconButton>
-          </Grid>
-          <Grid sx={{  display: "flex", justifyContent: "space-around",
-              alignItems: "center", }} xs={6} >
-            <IconButton color="inherit">
-              <HomeIcon />
-            </IconButton>
-            <IconButton color="inherit">
-            <PeopleIcon />
-            </IconButton>
-            <IconButton color="inherit">
-            <ExploreOutlinedIcon />
-            </IconButton>
-          </Grid>
-
-          {/* Profile Icon and Menu */}
-          <Grid item xs={3} container justifyContent="flex-end">
-            <Profile></Profile>
-            
-          </Grid>
+    <Box sx={{ flexGrow: 1 }}>
+      <Grid container spacing={2}>
+        <Grid xs={3}>
+            <Side></Side>
         </Grid>
-      </Toolbar>
-    </AppBar>
-  );
-};
+        <Grid xs={6}>
+          <Item>xs=4</Item>
+        </Grid>
+        <Grid xs={3}>
+          <Item>xs=4</Item>
+        </Grid>
 
-export default Homelayout;
+      </Grid>
+    </Box>
+  );
+}

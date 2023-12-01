@@ -1,12 +1,12 @@
 import React from 'react'
 import Navbar from '../../components/navbar/Navbar'
-import Sidebar from '../../components/sidebar/Sidebar'
+import Homelayout from '../homelayout/Homelayout'
 
 const Home = () => {
   return (
     <div>
       <Navbar></Navbar>
-      <Sidebar></Sidebar>
+      <Homelayout></Homelayout>
     </div>
   )
 }
