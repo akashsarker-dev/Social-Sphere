@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
 import Side from '../../components/sidebar/Sidebar';
+import Post from '../../components/post/Post';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -20,11 +21,10 @@ export default function Homelayout() {
         <Grid xs={3}>
             <Side></Side>
         </Grid>
-        <Grid xs={6}>
-          <Item>xs=4</Item>
+        <Grid xs={6} sx={{ display:'flex', flexDirection:'column', alignItems:'center'}}>
+          <Post></Post>
         </Grid>
         <Grid xs={3}>
-          <Item>xs=4</Item>
         </Grid>
 
       </Grid>

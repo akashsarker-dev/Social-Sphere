@@ -3,8 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -12,35 +10,109 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { IconButton, InputAdornment } from "@mui/material";
+import { Card, InputAdornment } from "@mui/material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { Link } from "react-router-dom";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { ToastContainer, toast } from 'react-toastify';
 
 const defaultTheme = createTheme();
 
 export default function Login() {
+  const auth = getAuth();
+
+
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [password, setPassword] = React.useState();
+  // console.log(password,'paaaaaa');
+  const [email, setEmail] = React.useState();
+  // console.log(email,'sdfsfdsf');
+
+  const [emailError, setEmailError] = React.useState();
+  const [passwordError, setPasswordError] = React.useState();
+
+  
+  const handleEmail =(e)=>{
+    setEmail(e.target.value);
+    setEmailError('')
+  }
+
+  const handlePassword =(e)=>{
+    setPassword(e.target.value);
+    setPasswordError('')
+  }
+
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-  };
-  const [showPassword, setShowPassword] = React.useState(false);
 
+    if (!email) {
+      setEmailError('Please Enter You Email')
+    }
+    if (!password) {
+      setPasswordError('Please Enter You Password')
+    }
+    if (email && password) {
+    signInWithEmailAndPassword(auth, email, password)
+  .then((user) => {
+    console.log(user, 'sdfshdfhdhf');
+  }).then(()=>{
+    setEmail('')
+    setPassword('')
+
+    toast.success('Login Success', {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      });
+  })
+  .catch((error) => {
+    console.log(error.code);
+    if(error.code.includes('auth/invalid-credential')){
+      setPasswordError('Email & Password Not Match')
+    }
+   
+  });
+    }
+
+
+  //   signInWithEmailAndPassword(auth, email, password)
+  // .then((userCredential) => {
+  //   const user = userCredential.user;
+  // })
+  // .catch((error) => {
+  //   console.log(error.code);
+  // });
+  };
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
+      <Card sx={{ maxWidth: 400, py:5 , mx:'auto', marginTop:'60px'}}>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        />
+      <Container component="main" >
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-          }}
-        >
+          }} >
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
@@ -51,32 +123,27 @@ export default function Login() {
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            sx={{ mt: 1 }}
-          >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              name="password"
-              label="Password"
-              type={showPassword ? "text" : "password"}
+            sx={{ mt: 1 }}>
+            <TextField onChange={handleEmail}
+              margin="normal"required fullWidth
+              id="email" label="Email Address"
+              value={email} autoComplete="email" autoFocus/>
+              {
+                emailError && 
+              <Typography sx={{ color: 'error.main' }} variant="p">
+            {emailError}
+          </Typography> }
+
+            <TextField onChange={handlePassword}
+              fullWidth margin="normal" value={password}
+              label="Password" type={showPassword ? "text" : "password"}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
                     {showPassword ? (
                       <VisibilityOffIcon
                         onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                      ></VisibilityOffIcon>
+                        edge="end" ></VisibilityOffIcon>
                     ) : (
                       <RemoveRedEyeIcon
                         onClick={() => setShowPassword(!showPassword)}
@@ -84,10 +151,15 @@ export default function Login() {
                     )}
                   </InputAdornment>
                 ),
-              }}
-            />
+              }}/>
+              {
+                passwordError && 
+              <Typography sx={{ color: 'error.main' }} variant="p">
+            {passwordError}
+          </Typography>
+              }
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link  variant="body2">
                 Forgot password?
               </Link>
             </Grid>
@@ -111,6 +183,7 @@ export default function Login() {
           </Box>
         </Box>
       </Container>
+      </Card>
     </ThemeProvider>
   );
 }
