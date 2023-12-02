@@ -12,21 +12,22 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Card, InputAdornment } from "@mui/material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer, toast } from 'react-toastify';
+import { useDispatch } from "react-redux";
+import { userLoginInfo } from "../../slices/UserSlices";
 
 const defaultTheme = createTheme();
 
 export default function Login() {
   const auth = getAuth();
+  const navigate = useNavigate()
 
-
+  const dispatch = useDispatch()
   const [showPassword, setShowPassword] = React.useState(false);
   const [password, setPassword] = React.useState();
-  // console.log(password,'paaaaaa');
   const [email, setEmail] = React.useState();
-  // console.log(email,'sdfsfdsf');
 
   const [emailError, setEmailError] = React.useState();
   const [passwordError, setPasswordError] = React.useState();
@@ -56,8 +57,7 @@ export default function Login() {
     if (email && password) {
     signInWithEmailAndPassword(auth, email, password)
   .then((user) => {
-    console.log(user, 'sdfshdfhdhf');
-  }).then(()=>{
+    // console.log(user, 'sdfshdfhdhf');
     setEmail('')
     setPassword('')
 
@@ -71,9 +71,18 @@ export default function Login() {
       progress: undefined,
       theme: "colored",
       });
+
+      dispatch(userLoginInfo(user.user))
+      localStorage.setItem('userLoginInfo', JSON.stringify(userLoginInfo(user)))
+
+      setTimeout(()=>{
+
+        navigate('/')
+      },3000)
+      
+    
   })
   .catch((error) => {
-    console.log(error.code);
     if(error.code.includes('auth/invalid-credential')){
       setPasswordError('Email & Password Not Match')
     }

@@ -64,9 +64,7 @@ export default function SignUp() {
     if(fullName && email && password && /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/){
 
       createUserWithEmailAndPassword(auth, email, password, fullName)
-  .then((userCredential) => {
-    const user = userCredential.user;
-    console.log(user);
+  .then(() => {
     sendEmailVerification(auth.currentUser)
   })
   .then(() => {
@@ -87,11 +85,11 @@ export default function SignUp() {
       setTimeout(()=>{
         navigate ('/login')
       },3000)
+      
   }).catch((error) => {
     if(error.code.includes('auth/email-already-in-use')){
       setEmailError('This Email is already in use')
     };
-    console.log(error.code);
   });
     }
 
@@ -118,8 +116,7 @@ export default function SignUp() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="colored"
-        />
+        theme="colored"/>
       <Card sx={{ maxWidth: 450,p:5, mx:'auto', marginTop:'30px'}} >
         <CssBaseline />
         <Box  sx={{
