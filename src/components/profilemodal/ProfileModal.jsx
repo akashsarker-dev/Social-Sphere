@@ -10,7 +10,8 @@ import Tooltip from '@mui/material/Tooltip';
 import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { getAuth, signOut } from "firebase/auth";
 
 export default function Profile() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -18,9 +19,18 @@ export default function Profile() {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+  const navigate = useNavigate()
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const handleLogout =()=>{
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      localStorage.removeItem("userLoginInfo")
+      navigate('/login')
+    }).catch((error) => {
+    });
+  }
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -42,17 +52,18 @@ export default function Profile() {
         anchorEl={anchorEl}
         id="account-menu"
         open={open}
-        onClose={handleClose}
         onClick={handleClose}
         PaperProps={{
           elevation: 0,
           sx: {
             overflow: 'visible',
+            height:300,
+            p:2,
             filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
             mt: 1.5,
             '& .MuiAvatar-root': {
-              width: 32,
-              height: 32,
+              width: 50,
+              height: 50,
               ml: -0.5,
               mr: 1,
             },
@@ -71,15 +82,14 @@ export default function Profile() {
           },
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      >
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
         <MenuItem onClick={handleClose}>
-          <Link style={{display:'flex'}} to='/profile'>
-          <Avatar /> My account
+          <Link style={{display:'flex', alignItems:'center'}} to='/profile'>
+          <Avatar  sx={{ width: 32, height: 32 }}/> My account
           </Link>
         </MenuItem>
         <MenuItem onClick={handleClose}>
-          <Avatar /> My account
+          <Avatar sx={{ width: 32, height: 32 }} /> My account
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleClose}>
@@ -94,7 +104,7 @@ export default function Profile() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

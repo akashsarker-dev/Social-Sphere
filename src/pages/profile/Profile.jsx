@@ -1,47 +1,98 @@
-import React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
+import React, { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Modal from '@mui/material/Modal';
 import { styled } from '@mui/system';
-
+import Navbar from '../../components/navbar/Navbar';
+import BasicTabs from '../../components/tabpanel/ProfileTabs';
+import ProfileImg from '../../assets/profile.png';
+import ProfilePicUpload from '../../components/profilepicupload/ProfilePicUpload';
+import { getStorage, ref, uploadString } from "firebase/storage";
 const CoverPhoto = styled('div')({
   width: '100%',
   height: '150px',
-  backgroundColor: '#1877f2', // Facebook blue
+  backgroundColor: '#1877f2',
 });
 
-const Profile = () => {
+const HoverableAvatar = styled(Avatar)({
+  width: 80,
+  height: 80,
+  margin: 'auto',
+  position: 'relative',
+  cursor: 'pointer',
+
+  '&:hover .upload-icon': {
+    opacity: 1,
+  },
+
+  '& .upload-icon': {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    fontSize: 24,
+    color: '#fff',
+    opacity: 0,
+    transition: 'opacity 0.3s ease-in-out',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.41)',
+    height: '100%',
+    width: '100%',
+  },
+});
+
+const ModalContent = styled(Paper)({
+  position: 'absolute',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 2,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+});
+
+const Profile = ({storageRef,onGetCropData}) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleAvatarClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+  const handleCropData = (data) => {
+    // This function will be called when getCropData is invoked in the child
+    console.log('Crop data received in parent:', data);
+    // You can perform additional logic here in the Profile component
+  };
   return (
     <div>
-      <AppBar position="sticky">
-        <Toolbar>
-          <Typography variant="h6">Facebook Profile Demo</Typography>
-        </Toolbar>
-      </AppBar>
-
-      <CoverPhoto />
-
-      <Grid container spacing={2} sx={{ marginTop: 2 }}>
-        <Grid item xs={12}>
-          <Paper elevation={3} sx={{ padding: 2, textAlign: 'center' }}>
-            <Avatar sx={{ width: 80, height: 80, margin: 'auto' }}>U</Avatar>
-            <Typography variant="h6" sx={{ marginTop: 2 }}>User Name</Typography>
-            <Typography variant="body2" color="textSecondary">City, Country</Typography>
-          </Paper>
-        </Grid>
-
-        <Grid item xs={12}>
-          {/* Add posts or other profile content here */}
-          <Paper elevation={3} sx={{ padding: 2 }}>
-            <Typography variant="h6">Recent Posts</Typography>
-            <Typography variant="body1">Post 1 content...</Typography>
-            <Typography variant="body1">Post 2 content...</Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+      <Navbar />
+      {/* <CoverPhoto /> */}
+      <Paper elevation={3} sx={{ padding: 2, textAlign: 'center' }}>
+        <HoverableAvatar onClick={handleAvatarClick}>
+          <Avatar src={ProfileImg} sx={{ width: 80, height: 80, margin: 'auto' }} />
+          <div className="upload-icon">
+            <CloudUploadIcon />
+          </div>
+        </HoverableAvatar>
+        <Typography variant="h4" sx={{ marginTop: 2 }}>
+          Akash Sarker
+        </Typography>
+        <Typography variant="body2" color="textSecondary">
+          City, Country
+        </Typography>
+      </Paper>
+      <BasicTabs />
+      <Modal open={isModalOpen} onClose={handleCloseModal}>
+      <ProfilePicUpload onCancel={handleCloseModal} onGetCropData={handleCropData} />
+      </Modal>
     </div>
   );
 };

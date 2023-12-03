@@ -4,12 +4,12 @@ import { createBrowserRouter,RouterProvider,} from "react-router-dom";
 import SignUp from "./pages/singup/SingUp";
 import Login from "./pages/login/Login";
 import Home from "./pages/home/Home";
-import Profile from "./pages/profile/Profile";
 import './App.css'
 import './FirebaseConfig.jsx'
 import 'react-toastify/dist/ReactToastify.css';
 import { store } from './store.jsx'
 import { Provider } from 'react-redux'
+import Profile from "./pages/profile/Profile.jsx";
 
 
 const router = createBrowserRouter([
