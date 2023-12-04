@@ -57,7 +57,7 @@ export default function Login() {
     if (email && password) {
     signInWithEmailAndPassword(auth, email, password)
   .then((user) => {
-    // console.log(user, 'sdfshdfhdhf');
+    console.log(user, 'sdfshdfhdhf');
     setEmail('')
     setPassword('')
 
@@ -73,7 +73,7 @@ export default function Login() {
       });
 
       dispatch(userLoginInfo(user.user))
-      localStorage.setItem('userLoginInfo', JSON.stringify(userLoginInfo(user)))
+      localStorage.setItem('userLoginInfo', JSON.stringify(user))
 
       setTimeout(()=>{
 

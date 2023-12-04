@@ -6,7 +6,13 @@ import { Avatar, BottomNavigation, Box, Card } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
-import { getStorage, ref, uploadString } from "firebase/storage";
+import { getDownloadURL, getStorage, ref, uploadString } from "firebase/storage";
+import { getAuth, updateProfile } from 'firebase/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { userLoginInfo } from '../../slices/UserSlices';
+import { update } from 'firebase/database';
+import { getDatabase, ref as dataRef, set } from "firebase/database";
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -20,9 +26,15 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-export default function ProfilePicUpload({ onCancel, storageRef, onGetCropData}) {
+export default function ProfilePicUpload({ onCancel,onGetCropData }) {
 
-  
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const data = useSelector(state => state.userLoginInfo.userInfo.user)
+  console.log(data.photoURL,'data');
+
+  const auth =getAuth()
   const storage = getStorage();
     const handleCancel = () => {
         onCancel();
@@ -30,7 +42,7 @@ export default function ProfilePicUpload({ onCancel, storageRef, onGetCropData})
       const [image, setImage] = React.useState();
   const [cropData, setCropData] = React.useState("");
   const cropperRef = React.createRef();
-
+  const db = getDatabase();
   const handleImgUpload = (e) => {
     e.preventDefault();
     let files;
@@ -43,29 +55,36 @@ export default function ProfilePicUpload({ onCancel, storageRef, onGetCropData})
     const reader = new FileReader();
     reader.onload = () => {
       setImage(reader.result);
-      console.log(reader.result);
     };
     reader.readAsDataURL(files[0]);
   };
 
-  const getCropData = async () => {
+  const getCropData = () => {
     if (typeof cropperRef.current?.cropper !== "undefined") {
       setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
 
-      const storageRef = ref(storage, 'some-child');
-      const message4 = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
-      try {
-        const snapshot = await uploadString(storageRef, message4, 'data_url');
+
+      const storageRef = ref(storage, auth.currentUser.uid);
+
+    const message4 = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
+      uploadString(storageRef, message4, 'data_url').then((snapshot) => {
         console.log('Uploaded a data_url string!');
-        // Pass cropData to the parent component
         onGetCropData(cropData);
-      } catch (error) {
-        // console.log(error.code);
-        // Handle the error, if needed
-      }
+        getDownloadURL(storageRef).then((downloadURL) => {
+          console.log('File available at', downloadURL);
+          updateProfile(auth.currentUser, {
+            photoURL : downloadURL,
+          }).then(()=>{
+            
+              update(dataRef(db, 'users/' + data.uid), {
+                  img : downloadURL
+              })
+              onCancel();
+          })
+        });
+      });
     }
   };
-
   return (
     <Card sx={{width:'400px' , mx:'auto', p:4,}}>
       
@@ -79,7 +98,7 @@ export default function ProfilePicUpload({ onCancel, storageRef, onGetCropData})
         style={{ width: "100%",position:'relative', height: "100%" }}
       />
           :
-          <Avatar
+          <Avatar src={data?.photoURL}
           className="box"
           style={{ width: "100px", float: "center", height: "100px" }}
         />

@@ -12,14 +12,19 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Card } from '@mui/material';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile, } from "firebase/auth";
 import { ToastContainer, toast } from 'react-toastify';
+// import Profile from '../../assets/profile.png'
+import { getDatabase, ref, set } from "firebase/database";
+
 
 
 const defaultTheme = createTheme();
 
 
 export default function SignUp() {
+
+  const db = getDatabase();
 
   const navigate = useNavigate()
   const auth = getAuth();
@@ -48,59 +53,48 @@ export default function SignUp() {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!email) {
-      setEmailError('Please Enter You Email')
-    }else{
+      setEmailError("Please Enter You Email Address");
+    } else {
       if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
-            setEmailError("Please Enter a valid email address");
+        setEmailError("Please Enter a valid email address");
       }
     }
-    
     if (!fullName) {
-      setFullNameError('Please Enter You Email')
-    }if (!password) {
-      setPasswordError('Please Enter You Email')
+      setFullNameError("Please Enter You Name");
     }
-
-    if(fullName && email && password && /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/){
+    if (!password) {
+      setPasswordError("Please Enter You Password");
+    }
+    if (fullName && email && password && /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/){
 
       createUserWithEmailAndPassword(auth, email, password, fullName)
-  .then(() => {
-    sendEmailVerification(auth.currentUser)
-  })
-  .then(() => {
-    setEmail('')
-    setFullName('')
-    setPassword('')
-    
-    toast.success('Registration Complete Verify You Email', {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-      });
-      setTimeout(()=>{
-        navigate ('/login')
-      },3000)
-      
-  }).catch((error) => {
-    if(error.code.includes('auth/email-already-in-use')){
-      setEmailError('This Email is already in use')
-    };
-  });
+        .then((user) => {
+          console.log(user.user.uid);
+          updateProfile(auth.currentUser, {
+            displayName: fullName,
+            // photoURL : '../../../public/images/profile.png'
+          })
+          .then(() => {
+            toast.success("please verify you email");
+            setEmail("");
+            setFullName("");
+            setPassword("");
+            setTimeout(() => {
+              navigate("/login");
+            }, 2000);
+          }).then(()=>{
+            set(ref(db, 'users/' + user.user.uid), {
+              username: user.user.displayName,
+              email: user.user.email,
+            })
+          })
+        })
+        
+        .catch((error) => {
+          if (error.code.includes("auth/email-already-in-use"))
+            setEmailError("this email is already use");
+        });
     }
-
-
-    // const data = new FormData(event.currentTarget);
-    // console.log({
-    //   email: data.get('email'),
-    //   password: data.get('password'),
-    // });
-
-
   };
   const [showPassword , setShowPassword] = React.useState(false)
 

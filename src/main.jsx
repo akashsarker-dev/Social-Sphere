@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { store } from './store.jsx'
 import { Provider } from 'react-redux'
 import Profile from "./pages/profile/Profile.jsx";
+import Userlist from "./pages/uselist/Userlist.jsx";
 
 
 const router = createBrowserRouter([
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
   {
     path: "/profile",
     element: <Profile></Profile>,
+  },
+    {
+    path: "/user",
+    element: <Userlist></Userlist>,
   },
 
 ]);

@@ -40,9 +40,9 @@ const Navbar = () => {
               <Link style={{color:'#fff' }} to='/'>
               <HomeIcon />
               </Link>
-            <IconButton color="inherit">
+              <Link style={{color:'#fff' }} to='/user'>
             <PeopleIcon />
-            </IconButton>
+              </Link>
             <IconButton color="inherit">
             <ExploreOutlinedIcon />
             </IconButton>
