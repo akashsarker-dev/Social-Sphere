@@ -13,7 +13,6 @@ import HomeIcon from "@mui/icons-material/Home";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import PeopleIcon from "@mui/icons-material/People";
 import NestedModal from "../../pages/upload/Upload";
-import PostOption from "../../pages/postoption/PostOption";
 import ProfileModal from "../profilemodal/ProfileModal"
 import { Link } from "react-router-dom";
 
@@ -51,7 +50,6 @@ const Navbar = () => {
 
           {/* Profile Icon and Menu */}
           <Grid item xs={3} container justifyContent="flex-end">
-            <PostOption></PostOption>
             <NestedModal></NestedModal>
             <ProfileModal></ProfileModal>
           </Grid>
