@@ -12,6 +12,7 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from "firebase/auth";
+import { useSelector } from 'react-redux';
 
 export default function Profile() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -31,6 +32,8 @@ export default function Profile() {
     }).catch((error) => {
     });
   }
+  // const data = useSelector(state => state.userLoginInfo.userInfo)
+  // console.log(data);
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -42,9 +45,10 @@ export default function Profile() {
             sx={{ ml: 2 }}
             aria-controls={open ? 'account-menu' : undefined}
             aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-          >
-            <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+            aria-expanded={open ? 'true' : undefined} >
+            <Avatar src={''} sx={{ width: 32, height: 32 }}>
+              
+            </Avatar>
           </IconButton>
         </Tooltip>
       </Box>
@@ -88,9 +92,7 @@ export default function Profile() {
           <Avatar  sx={{ width: 32, height: 32 }}/> My account
           </Link>
         </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <Avatar sx={{ width: 32, height: 32 }} /> My account
-        </MenuItem>
+        
         <Divider />
         <MenuItem onClick={handleClose}>
           <ListItemIcon>

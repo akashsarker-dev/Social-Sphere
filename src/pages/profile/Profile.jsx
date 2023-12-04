@@ -12,7 +12,8 @@ import ProfilePicUpload from '../../components/profilepicupload/ProfilePicUpload
 // import { getStorage, ref, uploadString } from "firebase/storage";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
+
+
 const CoverPhoto = styled('div')({
   width: '100%',
   height: '150px',
@@ -69,49 +70,30 @@ const Profile = ({storageRef,onGetCropData}) => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-const [userData , setUserData] = useState([])
 
-
-  useEffect(()=>{
-    const userListsRef = ref(db, "users/");
-    onValue(userListsRef, (snapshot) => {
-      let arr =[];
-      snapshot.forEach(item=>{
-        // if (item.key != data.uid) {
-          arr.push(item.val());
-        // }
-      })
-      setUserData(arr)
-    });
-  },[])
-  console.log(userData,'asssssssss');
-
-
-
+  const data = useSelector(state => state.userLoginInfo.userInfo)
+  console.log(data,'Profile');
 
   const handleCropData = (data) => {
-    // This function will be called when getCropData is invoked in the child
     console.log('Crop data received in parent:', data);
-    // You can perform additional logic here in the Profile component
   };
-  // const data = useSelector(state => state.userLoginInfo.userInfo)
+
+
   return (
     <div>
       <Navbar />
       {/* <CoverPhoto /> */}
       <Paper elevation={3} sx={{ padding: 2, textAlign: 'center' }}>
         <HoverableAvatar onClick={handleAvatarClick}>
-          <Avatar src={''} sx={{ width: 80, height: 80, margin: 'auto' }} />
+          <Avatar src={data.photoURL} sx={{ width: 80, height: 80, margin: 'auto' }} />
           <div className="upload-icon">
             <CloudUploadIcon />
           </div>
         </HoverableAvatar>
         <Typography variant="h4" sx={{ marginTop: 2 }}>
-          Akash Sarker
+          {''}
         </Typography>
-        <Typography variant="body2" color="textSecondary">
-          City, Country
-        </Typography>
+        
       </Paper>
       <BasicTabs />
       <Modal open={isModalOpen} onClose={handleCloseModal}>

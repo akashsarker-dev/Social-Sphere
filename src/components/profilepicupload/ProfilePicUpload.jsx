@@ -26,20 +26,19 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-export default function ProfilePicUpload({ onCancel,onGetCropData }) {
+export default function ProfilePicUpload({ onCancel,onGetCropData,displayName}) {
 
   const dispatch = useDispatch()
-  const navigate = useNavigate()
 
   const data = useSelector(state => state.userLoginInfo.userInfo.user)
-  console.log(data.photoURL,'data');
+  console.log(data,'dataaaaaaaaaaa');
 
   const auth =getAuth()
   const storage = getStorage();
     const handleCancel = () => {
         onCancel();
       };
-      const [image, setImage] = React.useState();
+  const [image, setImage] = React.useState();
   const [cropData, setCropData] = React.useState("");
   const cropperRef = React.createRef();
   const db = getDatabase();
@@ -62,29 +61,32 @@ export default function ProfilePicUpload({ onCancel,onGetCropData }) {
   const getCropData = () => {
     if (typeof cropperRef.current?.cropper !== "undefined") {
       setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
-
-
       const storageRef = ref(storage, auth.currentUser.uid);
-
-    const message4 = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
+  
+      const message4 = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
       uploadString(storageRef, message4, 'data_url').then((snapshot) => {
         console.log('Uploaded a data_url string!');
         onGetCropData(cropData);
         getDownloadURL(storageRef).then((downloadURL) => {
           console.log('File available at', downloadURL);
-          updateProfile(auth.currentUser, {
-            photoURL : downloadURL,
-          }).then(()=>{
-            
+          dispatch(userLoginInfo({ ...data, photoURL: downloadURL }));
+          localStorage.setItem('downloadURL', downloadURL);
+          
+            updateProfile(auth.currentUser, {
+              photoURL: downloadURL,
+            }).then(() => {
               update(dataRef(db, 'users/' + data.uid), {
-                  img : downloadURL
-              })
-              onCancel();
-          })
-        });
-      });
+                img: downloadURL,
+              });
+            }).catch((error) => {
+              console.error(error);
+            });
+            onCancel()
+        })
+      })
     }
   };
+  
   return (
     <Card sx={{width:'400px' , mx:'auto', p:4,}}>
       
@@ -98,7 +100,7 @@ export default function ProfilePicUpload({ onCancel,onGetCropData }) {
         style={{ width: "100%",position:'relative', height: "100%" }}
       />
           :
-          <Avatar src={data?.photoURL}
+          <Avatar src={''}
           className="box"
           style={{ width: "100px", float: "center", height: "100px" }}
         />

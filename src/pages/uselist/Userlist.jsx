@@ -11,6 +11,13 @@ const Userlist = () => {
     const [userData , setUserData] = useState([])
     const db = getDatabase();
     const data = useSelector(state => state.userLoginInfo.userInfo)
+
+    useEffect(()=>{
+  
+      if (!data) {
+        navigate('/login') 
+      }
+    })
   useEffect(()=>{
     const userListsRef = ref(db, "users/");
     onValue(userListsRef, (snapshot) => {
